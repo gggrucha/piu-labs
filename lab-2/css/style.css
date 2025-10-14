@@ -5,7 +5,7 @@ html {
   line-height: 1.5; /* lepsza czytelność */
 }
 body {
-  margin: 1rem;
+  margin: auto;
   padding: 0;
 }
 
@@ -16,4 +16,16 @@ a {
 }
 a:hover {
   text-decoration: underline; /* podkreślenie przy najechaniu */
+}
+nav {
+  display: flex;
+  flex-direction: column;
+}
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  text-align: center;
 }
