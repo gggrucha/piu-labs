@@ -1,12 +1,228 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Lab 4</title>
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <h1>Lab 4</h1>
-    <a href="..">Powrót</a>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kanban — Prosta Tablica</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <h1>Kanban</h1>
+  <div class="board" id="board">
+  </div>
+  <script>
+    const COLUMNS = [
+      { id: 'todo', title: 'Do zrobienia' },
+      { id: 'doing', title: 'W trakcie' },
+      { id: 'done', title: 'Zrobione' }
+    ];
+    const STORAGE_KEY = 'kanbanData_v1'; //do localstorage
+    let state = { columns: {} };
+
+    // utilities
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8); //generuje losowe id dla karty
+    const randColor = () => { //kolor karty rgb
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      return `rgb(${r}, ${g}, ${b})`;
+    };
+
+    // ---------- przechowywanie danych po zamknięciu przeglądarki, LocalStorage ----------
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try { state = JSON.parse(raw); }
+        catch (e) { console.warn('Błąd parsowania localStorage, resetuję.'); initEmpty(); }
+      } else initEmpty();
+    }
+    function initEmpty() { state = { columns: {} }; COLUMNS.forEach(c => state.columns[c.id] = []); saveState(); }
+    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); updateCounters(); }
+
+    //wyswietlanie 
+    const board = document.getElementById('board');
+    function renderBoard() {
+      board.innerHTML = '';
+      COLUMNS.forEach(col => {
+        const container = document.createElement('section');
+        container.className = 'column';
+        container.dataset.col = col.id;
+
+
+        const header = document.createElement('div'); header.className = 'col-header';
+        const titleWrap = document.createElement('div'); titleWrap.className = 'col-title';
+        const h = document.createElement('strong'); h.textContent = col.title;
+        const count = document.createElement('span'); count.className = 'count'; count.dataset.counter = col.id; count.textContent = 0;
+        titleWrap.appendChild(h); titleWrap.appendChild(count);
+        header.appendChild(titleWrap);
+
+        const controls = document.createElement('div'); controls.className = 'col-controls';
+        const addBtn = document.createElement('button'); addBtn.textContent = 'Dodaj kartę'; addBtn.dataset.action = 'add-card';
+        const colorBtn = document.createElement('button'); colorBtn.textContent = 'Koloruj kolumnę'; colorBtn.dataset.action = 'color-column';
+        const sortBtn = document.createElement('button'); sortBtn.textContent = 'Sortuj ▲'; sortBtn.dataset.action = 'sort-column'; sortBtn.dataset.order = 'asc';
+        controls.appendChild(addBtn); controls.appendChild(colorBtn); controls.appendChild(sortBtn);
+        header.appendChild(controls);
+
+        container.appendChild(header);
+
+        const list = document.createElement('div'); list.className = 'list'; list.dataset.list = col.id;
+        list.addEventListener('click', onListClick);
+        container.appendChild(list);
+
+        const addArea = document.createElement('div'); addArea.className = 'add-input hidden';
+        const input = document.createElement('input'); input.className = 'add-title'; input.placeholder = 'Tytuł karty...';
+        const save = document.createElement('button'); save.className = 'small primary'; save.textContent = 'Zapisz'; save.dataset.action = 'save-new';
+        const cancel = document.createElement('button'); cancel.className = 'small'; cancel.textContent = 'Anuluj'; cancel.dataset.action = 'cancel-new';
+        addArea.appendChild(input); addArea.appendChild(save); addArea.appendChild(cancel);
+        container.appendChild(addArea);
+
+        controls.addEventListener('click', (e) => {
+          const action = e.target.dataset.action;
+          if (!action) return;
+          if (action === 'add-card') {
+            toggleAddArea(container, true);
+          } else if (action === 'color-column') {
+            colorColumn(col.id);
+          } else if (action === 'sort-column') {
+            const btn = e.target; const order = btn.dataset.order === 'asc' ? 'desc' : 'asc';
+            btn.dataset.order = order; btn.textContent = order === 'asc' ? 'Sortuj ▲' : 'Sortuj ▼';
+            sortColumn(col.id, order);
+          }
+        });
+
+        addArea.addEventListener('click', (e) => {
+          const act = e.target.dataset.action;
+          if (!act) return;
+          if (act === 'save-new') {
+            const title = input.value.trim();
+            if (title) createCard(col.id, title);
+            input.value = ''; toggleAddArea(container, false); saveState(); renderBoard();
+          } else if (act === 'cancel-new') {
+            input.value = ''; toggleAddArea(container, false);
+          }
+        });
+
+        board.appendChild(container);
+      });
+
+      COLUMNS.forEach(col => {
+        const list = document.querySelector(`[data-list='${col.id}']`);
+        const cards = state.columns[col.id] || [];
+        cards.forEach(card => list.appendChild(createCardEl(card)));
+      });
+      updateCounters();
+    }
+
+    function toggleAddArea(container, show) {
+      const area = container.querySelector('.add-input');
+      const btn = container.querySelector('button[data-action="add-card"]');
+      if (show) { area.classList.remove('hidden'); btn.style.display = 'none'; area.querySelector('input').focus(); }
+      else { area.classList.add('hidden'); btn.style.display = 'inline-block'; }
+    }
+
+
+    function createCard(colId, title) {
+      const card = { id: uid(), title, color: randColor() };
+      state.columns[colId].push(card);
+      saveState();
+      renderBoard();
+    }
+
+    function createCardEl(card) {
+      const el = document.createElement('div'); el.className = 'card'; el.style.background = card.color; el.dataset.id = card.id;
+
+      const body = document.createElement('div'); body.className = 'body';
+      const title = document.createElement('div'); title.contentEditable = true; title.textContent = card.title; title.title = 'Kliknij aby edytować. Zmiany zapiszą się po opuszczeniu pola.';
+      title.addEventListener('blur', () => { updateCardTitle(card.id, title.textContent.trim()); });
+      body.appendChild(title);
+
+      const actions = document.createElement('div'); actions.className = 'actions';
+
+      const left = document.createElement('div'); left.className = 'icon'; left.textContent = '←'; left.title = 'Przenieś w lewo'; left.dataset.action = 'move-left';
+
+      const right = document.createElement('div'); right.className = 'icon'; right.textContent = '→'; right.title = 'Przenieś w prawo'; right.dataset.action = 'move-right';
+
+      const colBtn = document.createElement('div'); colBtn.className = 'icon'; colBtn.textContent = '🎨'; colBtn.title = 'Losowy kolor karty'; colBtn.dataset.action = 'color-card';
+
+      const del = document.createElement('div'); del.className = 'icon'; del.textContent = '✕'; del.title = 'Usuń kartę'; del.dataset.action = 'delete-card';
+
+      actions.appendChild(left); actions.appendChild(right); actions.appendChild(colBtn); actions.appendChild(del);
+
+      el.appendChild(body);
+      el.appendChild(actions);
+
+      return el;
+    }
+
+    function onListClick(e) {
+      const actionEl = e.target.closest('[data-action]');
+      if (!actionEl) return;
+      const action = actionEl.dataset.action;
+      const list = e.currentTarget; // .list
+      const colId = list.dataset.list;
+
+      const cardEl = e.target.closest('.card');
+      const cardId = cardEl ? cardEl.dataset.id : null;
+      if (action === 'move-left') moveCard(cardId, colId, -1);
+      else if (action === 'move-right') moveCard(cardId, colId, +1);
+      else if (action === 'delete-card') deleteCard(cardId, colId);
+      else if (action === 'color-card') colorCard(cardId);
+    }
+
+    function moveCard(cardId, fromColId, dir) {
+      const fromIndex = COLUMNS.findIndex(c => c.id === fromColId);
+      const toIndex = fromIndex + dir;
+      if (toIndex < 0 || toIndex >= COLUMNS.length) return; // przekroczenie
+      const toColId = COLUMNS[toIndex].id;
+      const cardIdx = state.columns[fromColId].findIndex(c => c.id === cardId);
+      if (cardIdx === -1) return;
+      const [card] = state.columns[fromColId].splice(cardIdx, 1);
+      state.columns[toColId].push(card);
+      saveState(); renderBoard();
+    }
+
+    function deleteCard(cardId, fromColId) { //kasowanie karty przycisk x
+      const idx = state.columns[fromColId].findIndex(c => c.id === cardId);
+      if (idx > -1) { state.columns[fromColId].splice(idx, 1); saveState(); renderBoard(); }
+    }
+
+    function colorCard(cardId) { //kolorowanie pojedynczej karty
+      for (const col in state.columns) {
+        const cidx = state.columns[col].findIndex(c => c.id === cardId);
+        if (cidx > -1) { state.columns[col][cidx].color = randColor(); saveState(); renderBoard(); return; }
+      }
+    }
+
+    function colorColumn(colId) { //kolorowanie calej kolumny
+      const arr = state.columns[colId];
+      for (let i = 0; i < arr.length; i++) arr[i].color = randColor();
+      saveState(); renderBoard();
+    }
+
+    function updateCardTitle(cardId, newTitle) {
+      if (!newTitle) return;
+      for (const col in state.columns) {
+        const cidx = state.columns[col].findIndex(c => c.id === cardId);
+        if (cidx > -1) { state.columns[col][cidx].title = newTitle; saveState(); return; }
+      }
+    }
+
+    function sortColumn(colId, order = 'desc') {
+      state.columns[colId].sort((a, b) => a.title.localeCompare(b.title, 'pl', { sensitivity: 'base' }) * (order === 'desc' ? 1 : -1));
+      saveState(); renderBoard();
+    }
+    function updateCounters() {
+      COLUMNS.forEach(c => {
+        const el = document.querySelector(`[data-counter='${c.id}']`);
+        if (el) { el.textContent = (state.columns[c.id] || []).length; }
+      });
+    }
+
+    // ---------- Init ----------
+    loadState(); renderBoard();
+  </script>
+</body>
+
 </html>
