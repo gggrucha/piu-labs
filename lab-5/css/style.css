@@ -1,0 +1,103 @@
+:root {
+      --bg-color: #f0f2f5;
+      --panel-bg: #ffffff;
+      --primary: #3b82f6;
+      --danger: #ef4444;
+      --text: #1f2937;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h1 { margin-bottom: 10px; }
+    
+    .panel {
+      background: var(--panel-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.1s;
+      background-color: var(--primary);
+      color: white;
+    }
+
+    button:hover { opacity: 0.9; }
+    button:active { transform: scale(0.98); }
+
+    /* Grupowanie przycisków kolorami dla lepszego UX */
+    #recolorSquares, #recolorCircles { background-color: #10b981; }
+
+    .counters {
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .counters strong { color: var(--primary); font-size: 1.4rem; }
+
+    .board {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      min-height: 200px;
+      padding: 15px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      background-color: #fafafa;
+      align-content: flex-start;
+    }
+
+    .shape {
+      width: 60px;
+      height: 60px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+      position: relative;
+    }
+
+    .shape:hover { transform: scale(1.1) rotate(5deg); }
+    
+    /* Kształty */
+    .square { border-radius: 8px; }
+    .circle { border-radius: 50%; }
+
+    /* Animacja wejścia */
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .shape { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }

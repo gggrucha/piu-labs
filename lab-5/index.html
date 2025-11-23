@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lab 5</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <h1>Kwadraty i Koła</h1>
+
+    <div class="panel">
+      <div class="controls">
+        <button id="addSquare">Dodaj Kwadrat</button>
+        <button id="addCircle">Dodaj Koło</button>
+        <button id="recolorSquares">Przekoloruj Kwadraty</button>
+        <button id="recolorCircles">Przekoloruj Koła</button>
+      </div>
+
+      <div class="counters">
+        <span>Kwadraty: <strong id="cntSquares">0</strong></span>
+        <span>Koła: <strong id="cntCircles">0</strong></span>
+      </div>
+
+      <div id="board" class="board"></div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
