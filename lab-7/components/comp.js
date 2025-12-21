@@ -1,3 +1,4 @@
+// W tym pliku jest logika tworzenia pojedynczej karty produktu
 const template = document.createElement('template');
 
 template.innerHTML = `
@@ -123,7 +124,7 @@ template.innerHTML = `
 
   <div class="content">
     <h2><slot name="name">Nazwa produktu</slot></h2>
-    <div class="price"><slot name="price"></slot></div>
+    <div class="price-display">-- PLN</div>
     
     <div class="meta">
       <slot name="colors"></slot>
@@ -143,12 +144,42 @@ class ProductCard extends HTMLElement {
     shadow.appendChild(template.content.cloneNode(true));
   }
   
-  connectedCallback() {
-    const btn = this.shadowRoot.querySelector('.add-btn');
-    btn.addEventListener('click', () => {
-        alert('Dodano produkt do koszyka!');
-    });
+  static get observedAttributes() {
+    return ['price'];
   }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'price' && oldValue !== newValue) {
+      const priceEl = this.shadowRoot.querySelector('.price-display');
+      if (priceEl) {
+        priceEl.textContent = `${parseFloat(newValue).toFixed(2)} PLN`; //formatowanie
+      }
+    }
+  }
+  
+  get price() { return this.getAttribute('price'); }
+  set price(val) { this.setAttribute('price', val); }
+
+_emitAddToCart() {
+    const nameNode = this.shadowRoot.querySelector('slot[name="name"]');
+    const nameText = nameNode && nameNode.assignedNodes().length > 0 
+        ? nameNode.assignedNodes()[0].textContent 
+        : 'Produkt';
+
+    this.dispatchEvent(new CustomEvent('added-to-cart', {
+        bubbles: true,
+        composed: true,
+        detail: { 
+            name: nameText, 
+            price: this.price
+        }
+    }));
+}
+
+connectedCallback() {
+    const btn = this.shadowRoot.querySelector('.add-btn');
+    btn.addEventListener('click', () => this._emitAddToCart());
+}
 }
 
 customElements.define('product-card', ProductCard);

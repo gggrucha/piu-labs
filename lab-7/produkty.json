@@ -1,0 +1,58 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Bawełniany T-Shirt",
+      "price": 79.00,
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": [],
+	  "image": "./images/tshirt.jpg",
+	  "promo": "Bestseller"
+    },
+    {
+      "id": 2,
+      "name": "Kurtka wiosenna",
+      "price": 249.99,
+      "sizes": [],
+      "colors": ["rgb(224, 100, 17)", "red", "green"],
+	  "image": "./images/kurtkawiosenna.avif",
+	  "promo": "Bestseller"
+    },
+	{
+      "id": 3,
+      "name": "Płaszcz Wełniany",
+      "price": 499.00,
+      "sizes": ["M", "L"],
+      "colors": ["rgb(0, 0, 0)"],
+	  "image": "./images/plaszczwelniany.jpg",
+	  "promo": "-30%"
+    },
+	{
+      "id": 4,
+      "name": "Sweter Zimowy",
+      "price": 159.00,
+      "sizes": ["M", "L"],
+      "colors": ["rgb(100, 0, 0)"],
+	  "image": "./images/sweter.jpg",
+	  "promo": ""
+    },
+	{
+      "id": 5,
+      "name": "Sneakersy Urban Red",
+      "price": 239.00,
+      "sizes": ["38 - 45"],
+      "colors": ["rgb(100, 0, 0)"],
+	  "image": "./images/sneakersy.avif",
+	  "promo": "Nowość"
+    },
+	{
+      "id": 6,
+      "name": "Sukienka Świąteczna",
+      "price": 199.00,
+      "sizes": [""],
+      "colors": [],
+	  "image": "./images/sukienkaswiateczna.jpg",
+	  "promo": ""
+    }
+  ]
+}

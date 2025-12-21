@@ -3,90 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab-7: Sklep Premium</title>
-    <script type="module" src="./components/comp.js"></script>
+    <title>Lab-7</title>
+    <script type="module" src="./app.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #f8f9fa;
             margin: 0;
-            padding: 40px;
-        }
-        h1 { text-align: center; color: #1d3557; margin-bottom: 50px; }
-        
-        .shop-grid {
+            padding: 20px;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 20px;
+            align-items: flex-start;
         }
         
-        .specs-list {
-            margin: 0; padding: 0; list-style: none; display: inline-flex; gap: 5px;
+        product-list {
+            flex: 3;
         }
-        .color-dot {
-            width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 1px solid #ccc;
+
+        shopping-cart {
+            flex: 1;
+            position: sticky;
+            top: 20px;
+        }
+
+        @media (max-width: 800px) {
+            body { flex-direction: column-reverse; }
+            shopping-cart { width: 100%; position: static; }
         }
     </style>
 </head>
 <body>
 
-    <h1>Lista produktów</h1>
+    <product-list></product-list>
 
-    <div class="shop-grid">
-
-        <product-card>
-            <img slot="image" src="./images/tshirt.jpg" alt="Bawełniany T-shirt">
-            <span slot="promo">Bestseller</span>
-            <span slot="name">Bawełniany T-Shirt</span>
-            <span slot="price">89.00 PLN</span>
-            <div slot="sizes">Rozmiary: S, M, L, XL</div>
-        </product-card>
-
-        <product-card>
-            <img slot="image" src="./images/kurtkawiosenna.avif" alt="Kurtka Wiosenna">
-            <span slot="name">Kurtka wiosenna</span>
-            <span slot="price">249.99 PLN</span>
-            <div slot="colors">
-                Dostępne kolory: <span style="background:rgb(224, 100, 17);" class="color-dot"></span> <span style="background:lightblue;" class="color-dot"></span>
-            </div>
-        </product-card>
-
-        <product-card>
-            <img slot="image" src="./images/plaszczwelniany.jpg" alt="Płaszcz wełniany">
-            <span slot="promo">-30%</span>
-            <span slot="name">Płaszcz Wełniany</span>
-            <span slot="price">499.00 PLN</span>
-            <div slot="sizes">Rozmiary: M, L</div>
-            <div slot="colors">
-                Kolory: <span style="background:rgb(0, 0, 0);" class="color-dot"></span>
-            </div>
-        </product-card>
-
-        <product-card>
-            <img slot="image" src="./images/sweter.jpg" alt="Sweter Zimowy">
-            <span slot="name">Sweter Zimowy</span>
-            <span slot="price">159.00 PLN</span>
-            <div slot="colors">Materiał: 100% Wełna</div>
-        </product-card>
-
-        <product-card>
-            <img slot="image" src="./images/sneakersy.avif" alt="Sneakersy">
-            <span slot="promo">Nowość</span>
-            <span slot="name">Sneakersy Urban Red</span>
-            <span slot="price">329.00 PLN</span>
-            <div slot="sizes">38 - 45</div>
-        </product-card>
-
-        <product-card>
-            <img slot="image" src="./images/sukienkaswiateczna.jpg" alt="Sukienka Świąteczna">
-            <span slot="name">Sukienka Świąteczna</span>
-            <span slot="price">199.00 PLN</span>
-        </product-card>
-
-    </div>
+    <shopping-cart></shopping-cart>
 
 </body>
 </html>
